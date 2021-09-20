@@ -12,6 +12,8 @@ module.exports = {
       //foreign key 
       parent_id: {
         type: Sequelize.INTEGER,
+        defaultValue: null,
+        allowNull: true,
         references: {
             model: 'posts',
             key: 'id'
