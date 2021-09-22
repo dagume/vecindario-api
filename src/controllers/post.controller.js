@@ -1,12 +1,20 @@
 import Post from '../models/post';
 
+// All parent Posts
 export async function getPosts(req, res) {
     try {
         const posts = await Post.findAll({
-          where:{
-            parent_id: null
-        }
-        });
+            where:{
+                parent_id: null
+                },
+                include : {
+                    model : Post,
+                    as: 'comments',
+                },
+                order: [
+                    ['createdAt', 'DESC'],
+                ],
+            });
         res.json({
             data: posts
         })
@@ -21,12 +29,19 @@ export async function getPosts(req, res) {
     }
 } 
 
+// get post by ID
 export async function getPostById(req, res) {
     try {
+        // params
         const { id } = req.params;
+        // find post
         const post = await Post.findOne({
             where:{
                 id
+            },
+            include : {
+                model : Post,
+                as: 'comments',
             }
         });
         res.json({
@@ -43,86 +58,81 @@ export async function getPostById(req, res) {
     }
 }
 
-// export async function createPost(req, res) {
-//     const { name } = req.body;
+// create a post
+export async function createPost(req, res) {
+    const { name, content, owner_email } = req.body;
 
-//     try {
-//         let newArtist = await Artist.create({
-//             name,
-//         },
-//             {
-//                 fields: ['name']
-//             });
-//         if (newArtist) {
-//             return res.json({
-//                 message: 'Artist created successfully',
-//                 data: newArtist
-//             });
-//         } 
-//     } catch (err) {
-//         res.status(500).json({
-//             error: {
-//                 code: "ERROR",
-//                 http_code: 500,
-//                 message: 'Something goes wrong' + err
-//             }
-//         });
-//     }
-// }
+    try {
+        // create
+        let newPost = await Post.create({
+            name,
+            content,
+            owner_email,
+        },
+            {
+                fields: ['name', 'content', 'owner_email']
+            });
+        if (newPost) {
+            // return
+            res.json({
+                message: 'Post created successfully',
+                data: newPost
+            });
+        } 
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}
 
-// export async function updateArtist(req, res) {
-//     try {
-//         const { id } = req.params;
-//         const { name } = req.body;
-//         const data = await Artist.findAll({
-//             attributes: ['name'],
-//             where: {
-//                 id
-//             }
-//         });
-//         if (data.length > 0) {
-//             data.forEach(async Artist => {
-//                 await Artist.update({
-//                     name
-//                 });
-//             })
-//         }
+// Create a comment and count comments in the Post
+export async function createComment(req, res) {
+    const { parent_id, name, content, owner_email } = req.body;
 
-//         return res.json({
-//             message: 'Artist updated successfully',
-//             data: data
-//         })
-//     } catch (err) {
-//         res.status(500).json({
-//             error: {
-//                 code: "ERROR",
-//                 http_code: 500,
-//                 message: 'Something goes wrong' + err
-//             }
-//         });
-//     }
-// }
+    try {
+        // Create
+        let newComment = await Post.create({
+            parent_id,
+            name,
+            content,
+            owner_email,
+        },
+            {
+                fields: ['parent_id', 'name', 'content', 'owner_email']
+            });
 
-// export async function deleteArtist(req, res) {
-//     try {
-//         const { id } = req.params;
-//         const deleteRowCount = await Artist.destroy({
-//             where: {
-//                 id
-//             }
-//         });
-//         res.json({ 
-//             message: 'Artist deleted',
-//             count: deleteRowCount
-//         })
-//     } catch (err) {
-//         res.status(500).json({
-//             error: {
-//                 code: "ERROR",
-//                 http_code: 500,
-//                 message: 'Something goes wrong' + err
-//             }
-//         });
+        if (newComment) {
+            // get parent_post
+            let post = await Post.findOne({
+                where:{
+                    id: parent_id
+                }
+            });
 
-//     }
-// }
+            // comments counter
+            let comment_counter = post.comment_counter + 1;
+
+            // update comments counter
+            await post.update({ comment_counter: comment_counter });
+
+            // return
+            res.json({
+                message: 'Comment created successfully',
+                data: newComment
+            });
+        } 
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}

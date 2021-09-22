@@ -30,6 +30,12 @@ const Post = sequelize.define('posts', {
   }
 }, {
     timestamps:true
+}
+);
+
+Post.hasMany(Post,{
+  as:'comments',
+  foreignKey: 'parent_id',
 });
 
 export default Post;
