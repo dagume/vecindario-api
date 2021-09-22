@@ -136,3 +136,166 @@ export async function createComment(req, res) {
         });
     }
 }
+// add counter like in the Post
+export async function addPostLike(req, res) {
+    const { id } = req.body;
+    let message = 'Error';
+    
+    try {
+        
+        // get post
+        let post = await Post.findOne({
+            where:{
+                id: id,
+                parent_id: null
+            }
+        });
+
+        if (post) {
+            // likes counter
+            let like_counter = post.like_counter + 1;
+
+            // update likes counter
+            await post.update({ like_counter: like_counter });
+            message = 'Liked';
+        }
+        // return
+        res.json({
+            message: message,
+        });
+        
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}
+
+// remove conuter like in the Post
+export async function removePostLike(req, res) {
+    const { id } = req.body;
+    let message = 'Error';
+    
+    try {
+        
+        // get post
+        let post = await Post.findOne({
+            where:{
+                id: id,
+                parent_id: null
+            }
+        });
+        
+        if (post) {
+            
+            // likes counter
+            let counter = post.like_counter - 1;
+
+            // liking can't be negative value
+            var like_counter = post.like_counter == 0 ? 0 : counter ;
+            
+            // update likes counter
+            await post.update({ like_counter: like_counter });
+            message = 'Liking was remove';
+        }
+        // return
+        res.json({
+            message: message,
+        });
+        
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}
+
+// add counter Dislike in the Post
+export async function addPostDislike(req, res) {
+    const { id } = req.body;
+    let message = 'Error';
+    
+    try {
+        
+        // get post
+        let post = await Post.findOne({
+            where:{
+                id: id,
+                parent_id: null
+            }
+        });
+        
+        if (post) {
+            // likes counter
+            let dislike_counter = post.dislike_counter + 1;
+            
+            // update likes counter
+            await post.update({ dislike_counter: dislike_counter });
+            message = 'Disliked';
+        }
+        // return
+        res.json({
+            message: message,
+        });
+        
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}
+
+// remove conuter Dislike in the Post
+export async function removePostDislike(req, res) {
+    const { id } = req.body;
+    let message = 'Error';
+    
+    try {
+        
+        // get post
+        let post = await Post.findOne({
+            where:{
+                id: id,
+                parent_id: null
+            }
+        });
+        
+        if (post) {
+            
+            // likes counter
+            let counter = post.dislike_counter - 1;
+
+            // liking can't be negative value
+            var dislike_counter = post.dislike_counter == 0 ? 0 : counter ;
+            
+            // update likes counter
+            await post.update({ dislike_counter: dislike_counter });
+            message = 'Disliking was remove';
+        }
+        // return
+        res.json({
+            message: message,
+        });
+        
+    } catch (err) {
+        res.status(500).json({
+            error: {
+                code: "ERROR",
+                http_code: 500,
+                message: 'Something goes wrong' + err
+            }
+        });
+    }
+}
