@@ -4,7 +4,7 @@ import pkg from '../package.json';
 import helmet from 'helmet';
 
 //importing routes
-// import helloRoutes from './routes/hello.routes';
+import postRoutes from './routes/posts.routes';
 
 const app = express();
 
@@ -39,6 +39,6 @@ app.get('/', (req, res) => {
 })
 
 // routes
-// app.use('/api/hello', helloRoutes);
+app.use('/api/post', postRoutes);
 
 export default app;
