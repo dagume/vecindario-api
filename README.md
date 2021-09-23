@@ -10,13 +10,9 @@ Technical test Backend by Daniel Guecha
 
 
 
- * **Deployed:** #
+ * **Deployed:** https://dry-dusk-90160.herokuapp.com
 
  * **API Doc:** https://documenter.getpostman.com/view/3920889/UUxujVkU
-
- * **Documentation:** #
-
-
 
 
 
